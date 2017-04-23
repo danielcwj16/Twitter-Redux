@@ -16,6 +16,7 @@ class TweetsViewController: UIViewController ,UITableViewDataSource,UITableViewD
     var loadingMoreView : InfiniteScrollActivityView?
     var isMoreDataLoading = false
     var contentOffset : CGPoint?
+    var navgationControllerIndex : Int = 0
     
     @IBOutlet weak var tweetsTableView: UITableView!
     override func viewDidLoad() {
@@ -66,36 +67,72 @@ class TweetsViewController: UIViewController ,UITableViewDataSource,UITableViewD
         }) { (error:Error) in
             print(error.localizedDescription)
         }
-        
-        TwitterClient.sharedInstance.homeTimeline(success: { (tweets:[Tweet]) in
-            self.tweets = tweets
-            
-            for tweet in tweets{
-                print(tweet.text ?? "")
+        if State.currentMenuItem == 1 {
+            TwitterClient.sharedInstance.homeTimeline(success: { (tweets:[Tweet]) in
+                self.tweets = tweets
+                
+                for tweet in tweets{
+                    print(tweet.text ?? "")
+                }
+                
+                self.tweetsTableView.reloadData()
+                
+            }) { (error:Error) in
+                print(error.localizedDescription)
             }
-            
-            self.tweetsTableView.reloadData()
-            
-        }) { (error:Error) in
-            print(error.localizedDescription)
         }
+        if State.currentMenuItem == 2 {
+            TwitterClient.sharedInstance.mentionsTimeline(success: { (tweets:[Tweet]) in
+                self.tweets = tweets
+                
+                for tweet in tweets{
+                    print(tweet.text ?? "")
+                }
+                
+                self.tweetsTableView.reloadData()
+                
+            }) { (error:Error) in
+                print(error.localizedDescription)
+            }
+        }
+
     }
     
     func refreshTimeline(){
-        TwitterClient.sharedInstance.homeTimeline(success: { (tweets:[Tweet]) in
-            self.tweets = tweets
-            
-            for tweet in tweets{
-                print(tweet.text ?? "")
+        
+        if State.currentMenuItem == 1 {
+            TwitterClient.sharedInstance.homeTimeline(success: { (tweets:[Tweet]) in
+                self.tweets = tweets
+                
+                for tweet in tweets{
+                    print(tweet.text ?? "")
+                }
+                
+                self.tweetsTableView.reloadData()
+                
+                self.refreshControl.endRefreshing()
+                
+            }) { (error:Error) in
+                print(error.localizedDescription)
             }
-            
-            self.tweetsTableView.reloadData()
-            
-            self.refreshControl.endRefreshing()
-            
-        }) { (error:Error) in
-            print(error.localizedDescription)
         }
+        if State.currentMenuItem == 2 {
+            TwitterClient.sharedInstance.mentionsTimeline(success: { (tweets:[Tweet]) in
+                self.tweets = tweets
+                
+                for tweet in tweets{
+                    print(tweet.text ?? "")
+                }
+                
+                self.tweetsTableView.reloadData()
+                
+                self.refreshControl.endRefreshing()
+                
+            }) { (error:Error) in
+                print(error.localizedDescription)
+            }
+        }
+        
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -117,23 +154,46 @@ class TweetsViewController: UIViewController ,UITableViewDataSource,UITableViewD
     }
     
     func loadMoreData(){
-        TwitterClient.sharedInstance.homeTimeline(count: (self.tweets.count+20),success: { (tweets:[Tweet]) in
-            
-            self.isMoreDataLoading = false
-            self.tweets = tweets
-            
-            for tweet in tweets{
-                print(tweet.text ?? "")
+        
+        if State.currentMenuItem == 1{
+            TwitterClient.sharedInstance.homeTimeline(count: (self.tweets.count+20),success: { (tweets:[Tweet]) in
+                
+                self.isMoreDataLoading = false
+                self.tweets = tweets
+                
+                for tweet in tweets{
+                    print(tweet.text ?? "")
+                }
+                
+                self.loadingMoreView!.stopAnimating()
+                
+                
+                self.tweetsTableView.reloadData()
+                
+            }) { (error:Error) in
+                print(error.localizedDescription)
             }
-            
-            self.loadingMoreView!.stopAnimating()
-            
-            
-            self.tweetsTableView.reloadData()
-            
-        }) { (error:Error) in
-            print(error.localizedDescription)
         }
+        if State.currentMenuItem == 2 {
+            TwitterClient.sharedInstance.mentionsTimeline(count: (self.tweets.count+20),success: { (tweets:[Tweet]) in
+                
+                self.isMoreDataLoading = false
+                self.tweets = tweets
+                
+                for tweet in tweets{
+                    print(tweet.text ?? "")
+                }
+                
+                self.loadingMoreView!.stopAnimating()
+                
+                
+                self.tweetsTableView.reloadData()
+                
+            }) { (error:Error) in
+                print(error.localizedDescription)
+            }
+        }
+        
     }
 
     override func didReceiveMemoryWarning() {

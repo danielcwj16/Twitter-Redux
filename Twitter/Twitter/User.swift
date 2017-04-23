@@ -14,6 +14,10 @@ class User {
     var screenname : String?
     var profileUrl : URL?
     var tagline: String?
+    var tweetscount : Int = 0
+    var followingcount : Int = 0
+    var followerscount : Int = 0
+    
     
     init(dictionary : NSDictionary) {
         id = dictionary["id"] as! Int
@@ -26,6 +30,8 @@ class User {
         }
         
         tagline = dictionary["description"] as? String
-        
+        tweetscount = (dictionary["statuses_count"] as? Int) ?? 0
+        followingcount = (dictionary["friends_count"] as? Int) ?? 0
+        followerscount = (dictionary["followers_count"] as? Int) ?? 0
     }
 }

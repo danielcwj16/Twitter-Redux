@@ -37,8 +37,8 @@ class HamburgerViewController: UIViewController {
                 oldContentViewController.willMove(toParentViewController: nil)
                 oldContentViewController.view.removeFromSuperview()
             }
-            
-            contentViewController.willMove(toParentViewController: self)
+            self.addChildViewController(contentViewController)
+            //contentViewController.willMove(toParentViewController: self)
             contentViewController.view.tag = viewTag
             contentView.addSubview(contentViewController.view)
             contentViewController.didMove(toParentViewController: self)

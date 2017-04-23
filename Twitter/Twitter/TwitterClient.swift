@@ -14,7 +14,9 @@ let twitterComsumerKey = "r4ko5frZVueeivk9A5HkcfEdy"
 let twitterConsumerSecret = "5rEfLIYGD6RIKVnj1LLbcXpR2wP3AgyOpoYcnjEsYoqfIKqR3D"
 let twitterBaseURL = URL(string: "https://api.twitter.com")
 
+
 class TwitterClient: BDBOAuth1SessionManager {
+    var currentUser : User? = nil
     
     class var sharedInstance : TwitterClient{
         struct Static {
@@ -38,11 +40,40 @@ class TwitterClient: BDBOAuth1SessionManager {
         })
     }
     
+    func mentionsTimeline(count : Int = 20,success : @escaping ([Tweet]) -> (),failure : (Error) -> ()){
+        let params = ["count":count]
+        
+        get("1.1/statuses/mentions_timeline.json", parameters: params, progress: nil, success: { (task:URLSessionDataTask, response: Any?) -> Void in
+            let tweetsDictionary = response as! [NSDictionary]
+            
+            let tweets = Tweet.tweetsWithArray(dictionaries: tweetsDictionary)
+            
+            success(tweets)
+        }, failure: { (task:URLSessionDataTask?, error:Error) -> Void in
+            
+        })
+    }
+    
+    func userTimeline(count : Int = 20,success : @escaping ([Tweet]) -> (),failure : (Error) -> ()){
+        let params = ["count":count]
+        
+        get("1.1/statuses/user_timeline.json", parameters: params, progress: nil, success: { (task:URLSessionDataTask, response: Any?) -> Void in
+            let tweetsDictionary = response as! [NSDictionary]
+            
+            let tweets = Tweet.tweetsWithArray(dictionaries: tweetsDictionary)
+            
+            success(tweets)
+        }, failure: { (task:URLSessionDataTask?, error:Error) -> Void in
+            
+        })
+    }
+    
     func currentAccount(success : @escaping (User) -> (), failure : (Error) -> ()){
         get("1.1/account/verify_credentials.json", parameters: nil, progress: nil, success: { (task:URLSessionTask, response:Any?) -> Void in
             let userDictionary = response as! NSDictionary
             
             let user = User(dictionary: userDictionary)
+            self.currentUser = user
             success(user)
             print("name: \(user.name!)")
             print("screenname: \(user.screenname!)")
@@ -172,7 +203,11 @@ class TwitterClient: BDBOAuth1SessionManager {
         
         fetchAccessToken(withPath: "oauth/access_token", method: "POST", requestToken: requestToken, success: { (accessToken:BDBOAuth1Credential!) -> Void in
             print("I got the acess token!")
-            
+            TwitterClient.sharedInstance.currentAccount(success: { (user: User) in
+                self.currentUser = user
+            }) { (error:Error) in
+                print(error.localizedDescription)
+            }
             self.loginSuccss?()
         }) { (error:Error!) -> Void in
             print("error: \(error.localizedDescription)")

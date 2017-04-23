@@ -37,6 +37,8 @@ class MenuViewController: UIViewController,UITableViewDelegate,UITableViewDataSo
         viewControllers.append(mentionsNavigationController)
         
         hamburgerViewController.contentViewController = profileNavigationController
+        State.currentMenuItem = 0
+        
 
         // Do any additional setup after loading the view.
     }
@@ -63,7 +65,9 @@ class MenuViewController: UIViewController,UITableViewDelegate,UITableViewDataSo
         tableView.deselectRow(at: indexPath, animated: true)
         
         self.hamburgerViewController.viewTag = indexPath.row+1
+        State.currentMenuItem = indexPath.row
         self.hamburgerViewController.contentViewController  = viewControllers[indexPath.row]
+
     }
     /*
     // MARK: - Navigation
