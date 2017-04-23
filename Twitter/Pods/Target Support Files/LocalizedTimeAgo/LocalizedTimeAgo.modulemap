@@ -1,0 +1,6 @@
+framework module LocalizedTimeAgo {
+  umbrella header "LocalizedTimeAgo-umbrella.h"
+
+  export *
+  module * { export * }
+}
